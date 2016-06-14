@@ -37,8 +37,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     # apps
-    'docker_django.apps.todo',
+    'todo',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -52,7 +53,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
-ROOT_URLCONF = 'docker_django.urls'
+ROOT_URLCONF = '_project_.urls'
 
 TEMPLATES = [
     {
@@ -70,7 +71,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'docker_django.wsgi.application'
+WSGI_APPLICATION = '_project_.wsgi.application'
 
 
 # Database
@@ -102,18 +103,15 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
-
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATICFILES_DIRS = (
-#     os.path.join(BASE_DIR, 'static'),
-# )
-# print(STATICFILES_DIRS)
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
