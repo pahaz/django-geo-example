@@ -2,17 +2,19 @@ version: '2'
 
 services:
   web:
-    build: ./web/.
+    build: ./sources/.
     expose:
-      - "8000"
+      - "127.0.0.1:8000:8000"
     networks:
       - front-tier
       - back-tier
-    volumes:
-      - ./web:/app
-      - ./web/docker_django/static/:/www/static
+#    volumes:
+#      - ./sources/_project_/static/:/www/static
     env_file: .env
-    command: /usr/local/bin/gunicorn docker_django.wsgi:application -w 2 -b :8000
+    command: gunicorn _project_.wsgi:application -w 2 -b :8000
+    depends_on:
+      - postgres
+      - redis
 
   nginx:
     build: ./nginx/.
@@ -29,23 +31,23 @@ services:
     image: postgres:latest
     container_name: postgres
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data/
     networks:
-      - back-tier 
+      - back-tier
 
   redis:
     image: redis:latest
     container_name: redis
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     volumes:
       - redisdata:/data
     networks:
-      - back-tier 
-      
-volumes: 
+      - back-tier
+
+volumes:
   pgdata:
   redisdata:
 
