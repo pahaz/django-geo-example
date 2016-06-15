@@ -3,32 +3,30 @@ version: '2'
 services:
   web:
     build: ./sources/.
-    expose:
+    ports:
       - "127.0.0.1:8000:8000"
     networks:
       - front-tier
       - back-tier
-#    volumes:
-#      - ./sources/_project_/static/:/www/static
     env_file: .env
-    command: gunicorn _project_.wsgi:application -w 2 -b :8000
+    command: python manage.py runserver 0.0.0.0:8000  # gunicorn _project_.wsgi:application -w 2 -b :8000 --capture-output --enable-stdio-inheritance --log-level=debug --access-logfile=- --log-file=-
     depends_on:
       - postgres
       - redis
 
-  nginx:
-    build: ./nginx/.
-    ports:
-      - "80:80"
-    volumes:
-      - /www/static
-    volumes_from:
-      - web
-    networks:
-      - front-tier
+#  nginx:
+#    build: ./docks/nginx/.
+#    ports:
+#      - "80:80"
+#    volumes:
+#      - /www/static
+#    volumes_from:
+#      - web
+#    networks:
+#      - front-tier
 
   postgres:
-    image: postgres:latest
+    image: postgres:9.5.3
     container_name: postgres
     ports:
       - "127.0.0.1:5432:5432"
@@ -38,7 +36,7 @@ services:
       - back-tier
 
   redis:
-    image: redis:latest
+    image: redis:3.2.0
     container_name: redis
     ports:
       - "127.0.0.1:6379:6379"
