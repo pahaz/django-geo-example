@@ -14,16 +14,16 @@ services:
       - postgres
       - redis
 
-#  nginx:
-#    build: ./docks/nginx/.
-#    ports:
-#      - "80:80"
-#    volumes:
-#      - /www/static
-#    volumes_from:
-#      - web
-#    networks:
-#      - front-tier
+  nginx:
+    build: ./docks/nginx/.
+    ports:
+      - "80:80"
+    volumes:
+      - /static
+    volumes_from:
+      - web
+    networks:
+      - front-tier
 
   postgres:
     image: postgres:9.5.3
