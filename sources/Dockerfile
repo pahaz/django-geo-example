@@ -23,3 +23,4 @@ RUN /app/docker-prepare.sh
 
 ENV PYTHONUNBUFFERED 1
 EXPOSE 8000
+VOLUME ["/static", "/media", "/app"]

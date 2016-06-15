@@ -18,10 +18,8 @@ services:
     build: ./docks/nginx/.
     ports:
       - "80:80"
-    volumes:
-      - /static
     volumes_from:
-      - web
+      - web:ro
     networks:
       - front-tier
 
