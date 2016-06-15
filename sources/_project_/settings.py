@@ -12,20 +12,23 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from os.path import join, abspath, normpath, dirname
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
+BASE_DIR = dirname(dirname(abspath(__file__)))
+PROJECT_ROOT = dirname(abspath(__file__))
+DATA_DIR = normpath(os.environ.get('DATA_DIR', join(BASE_DIR, '__data__')))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = os.environ.get('SECRET_KEY', 'Q+%ik6z&!yer+ga9m=e%jcqAd21asdAFw2')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if os.getenv('DEBUG') == 'true' else False
-STATIC_ROOT = os.environ['STATIC_ROOT']
-MEDIA_DIR = os.environ.get('MEDIA_DIR')
+DEBUG = os.environ.get('DEBUG', 'true').lower() == 'true'
+STATIC_ROOT = os.environ.get('STATIC_ROOT', join(DATA_DIR, 'static'))
+MEDIA_DIR = os.environ.get('MEDIA_DIR', join(DATA_DIR, 'media'))
+DATABASE = os.environ.get('DATABASE', 'sqlite3')
 
 ALLOWED_HOSTS = ['*']
 
@@ -79,23 +82,27 @@ WSGI_APPLICATION = '_project_.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ['DB_NAME'],
-        'USER': os.environ['DB_USER'],
-        'PASSWORD': os.environ['DB_PASS'],
-        'HOST': os.environ['DB_SERVICE'],
-        'PORT': os.environ['DB_PORT']
+if DATABASE == 'sqlite3':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
+elif DATABASE == 'postgresql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.environ['DB_NAME'],
+            'USER': os.environ['DB_USER'],
+            'PASSWORD': os.environ['DB_PASS'],
+            'HOST': os.environ['DB_SERVICE'],
+            'PORT': os.environ['DB_PORT']
+        }
+    }
+else:
+    raise RuntimeError('Bad django configuration. Invalid DATABASE type')
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
