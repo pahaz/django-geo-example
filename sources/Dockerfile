@@ -10,9 +10,26 @@ RUN apt-get update && apt-get install -y \
         liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python3-tk \
     --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
+# explicitly set user/group IDs
+RUN groupadd -r unprivileged --gid=999 && useradd -r -g unprivileged --uid=999 unprivileged
+
+# grab gosu for easy step-down from root
+ENV GOSU_VERSION 1.7
+RUN set -x \
+	&& apt-get update && apt-get install -y --no-install-recommends ca-certificates wget && rm -rf /var/lib/apt/lists/* \
+	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
+	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
+	&& export GNUPGHOME="$(mktemp -d)" \
+	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
+	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
+	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
+	&& chmod +x /usr/local/bin/gosu \
+	&& gosu nobody true \
+	&& apt-get purge -y --auto-remove ca-certificates wget
+
 RUN pip install --no-cache-dir --upgrade gunicorn
 
-RUN mkdir -p /app
+RUN mkdir -p /app /media /static && chown -R unprivileged:unprivileged /media
 WORKDIR /app
 
 COPY requirements.txt /app/
