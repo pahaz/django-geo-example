@@ -13,10 +13,14 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 from os.path import join, abspath, normpath, dirname
+import warnings
 
+DEBUG = False
 BASE_DIR = dirname(dirname(abspath(__file__)))
 PROJECT_ROOT = dirname(abspath(__file__))
 DATA_DIR = normpath(os.environ.get('DATA_DIR', join(BASE_DIR, '__data__')))
+
+REDIS_HOST = 'redis'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -86,7 +90,7 @@ if DATABASE == 'sqlite3':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
         }
     }
 elif DATABASE == 'postgresql':
@@ -124,3 +128,29 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, 'static'),
 )
+
+# Celery
+BROKER_TRANSPORT = 'redis'
+CELERY_BROKER_TRANSPORT = BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_TIMEZONE = 'UTC'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']  # Ignore other content
+CELERY_RESULT_SERIALIZER = 'json'
+CELERYBEAT_SCHEDULE_FILENAME = join(DATA_DIR, 'celerybeat.db')
+CELERYBEAT_SCHEDULE = {}
+
+
+try:
+    from celery.schedules import crontab  # noqa
+    from datetime import timedelta  # noqa
+    CELERYBEAT_SCHEDULE = {
+        'update_todo_viewers': {
+            'task': 'todo.tasks.increase',
+            'schedule': timedelta(minutes=1),
+            'args': (15, )
+        },
+    }
+except ImportError:
+    warnings.warn('CELERYBEAT DON`T WORK: from celery.schedules import '
+                  'crontab raise ImportError!')
