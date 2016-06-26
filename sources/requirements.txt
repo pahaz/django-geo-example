@@ -3,3 +3,6 @@ psycopg2>=2.6
 redis>=2.10
 Pillow>=3.2
 celery>=3.1.23
+
+aiohttp>=0.21.5
+aioredis>=0.2.6
