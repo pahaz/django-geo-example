@@ -3,10 +3,14 @@ version: '2'
 services:
   web:
     build: ./sources/.
+    image: websource
     ports:
       - "127.0.0.1:8000:8000"
     env_file: .env
     command: python manage.py runserver 0.0.0.0:8000  # gunicorn _project_.wsgi:application -w 2 -b :8000 --capture-output --enable-stdio-inheritance --log-level=debug --access-logfile=- --log-file=-
+    volumes:
+      - cachedata:/cache
+      - mediadata:/media
     depends_on:
       - postgres
       - redis
@@ -17,6 +21,27 @@ services:
       - "80:80"
     volumes_from:
       - web:ro
+    depends_on:
+      - web
+
+  celery_worker:
+    image: websource
+    env_file: .env
+    command: python -m celery -A _project_ worker -l debug
+    volumes_from:
+      - web
+    depends_on:
+      - web
+
+  celery_beat:
+    container_name: celery_beat
+    image: websource
+    env_file: .env
+    command: python -m celery -A _project_ beat --pidfile= -l debug
+    volumes_from:
+      - web
+    depends_on:
+      - web
 
   postgres:
     image: postgres:9.5.3
@@ -37,3 +62,5 @@ services:
 volumes:
   pgdata:
   redisdata:
+  cachedata:
+  mediadata:
