@@ -1,63 +1,74 @@
 version: '2'
 
 services:
-  web:
-    build: ./sources/.
-    image: websource
-    ports:
-      - "127.0.0.1:8000:8000"
-    env_file: .env
-    command: python manage.py runserver 0.0.0.0:8000  # gunicorn _project_.wsgi:application -w 2 -b :8000 --capture-output --enable-stdio-inheritance --log-level=debug --access-logfile=- --log-file=-
-    volumes:
-      - cachedata:/cache
-      - mediadata:/media
-    depends_on:
-      - postgres
-      - redis
-
   nginx:
-    build: ./docks/nginx/.
+    build: './docks/nginx/.'
     ports:
-      - "80:80"
+      - '8080:80'
     volumes_from:
       - web:ro
     depends_on:
       - web
 
+  web:
+    build: './sources/.'
+    image: 'websource'
+    ports:
+      - '127.0.0.1:8000:8000'
+    env_file: '.env'
+    command: 'gunicorn _project_.wsgi:application -w 2 -b :8000 --capture-output --enable-stdio-inheritance --log-level=debug --access-logfile=- --log-file=-'
+    volumes:
+      - 'cachedata:/cache'
+      - 'mediadata:/media'
+    depends_on:
+      - postgres
+      - redis
+
+  realtime:
+    image: 'websource'
+    ports:
+      - '127.0.0.1:9999:9999'
+    env_file: '.env'
+    command: 'python realtime_ws_server.py'
+    volumes_from:
+      - web
+    depends_on:
+      - web
+
   celery_worker:
-    image: websource
-    env_file: .env
-    command: python -m celery -A _project_ worker -l debug
+    image: 'websource'
+    env_file: '.env'
+    command: 'python -m celery -A _project_ worker -l debug'
     volumes_from:
       - web
     depends_on:
       - web
 
   celery_beat:
-    container_name: celery_beat
-    image: websource
-    env_file: .env
-    command: python -m celery -A _project_ beat --pidfile= -l debug
+    container_name: 'celery_beat'
+    image: 'websource'
+    env_file: '.env'
+    command: 'python -m celery -A _project_ beat --pidfile= -l debug'
     volumes_from:
       - web
     depends_on:
       - web
 
   postgres:
-    image: postgres:9.5.3
-    container_name: postgres
+    container_name: 'postgres'
+    image: 'postgres:9.5.3'
     ports:
-      - "127.0.0.1:5432:5432"
+      - '127.0.0.1:5432:5432'
     volumes:
-      - pgdata:/var/lib/postgresql/data/
+      - 'pgdata:/var/lib/postgresql/data/'
 
   redis:
-    image: redis:3.2.0
-    container_name: redis
+    container_name: 'redis'
+    image: 'redis:3.2.0'
     ports:
-      - "127.0.0.1:6379:6379"
+      - '127.0.0.1:6379:6379'
     volumes:
-      - redisdata:/data
+      - 'redisdata:/data'
 
 volumes:
   pgdata:
