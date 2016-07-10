@@ -158,4 +158,4 @@ if __name__ == '__main__':
         logging.basicConfig(level='DEBUG')
     loop = asyncio.get_event_loop()
     app = loop.run_until_complete(get_app(loop=loop))
-    web.run_app(app)
+    web.run_app(app, host='0.0.0.0', port=9999)
