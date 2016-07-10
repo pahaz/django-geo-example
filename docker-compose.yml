@@ -23,6 +23,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - mongo
 
   realtime:
     image: 'websource'
@@ -70,8 +71,18 @@ services:
     volumes:
       - 'redisdata:/data'
 
+  mongo:
+    container_name: 'mongo'
+    image: 'mongo:3.3'
+    command: '--storageEngine wiredTiger'
+    ports:
+      - '127.0.0.1:27017:27017'
+    volumes:
+      - 'mongodata:/data/db'
+
 volumes:
   pgdata:
   redisdata:
   cachedata:
   mediadata:
+  mongodata:
