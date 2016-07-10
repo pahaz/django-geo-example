@@ -21,6 +21,9 @@ PROJECT_ROOT = dirname(abspath(__file__))
 DATA_DIR = normpath(os.environ.get('DATA_DIR', join(BASE_DIR, '__data__')))
 
 REDIS_HOST = 'redis'
+POSTGRES_HOST = os.environ.get('DB_SERVICE', 'postgres')
+MONGO_HOST = '127.0.0.1'
+DB_NAME = os.environ.get('DB_NAME', 'default')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -99,16 +102,24 @@ elif DATABASE == 'postgresql':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.environ['DB_NAME'],
+            'NAME': DB_NAME,
             'USER': os.environ['DB_USER'],
             'PASSWORD': os.environ['DB_PASS'],
-            'HOST': os.environ['DB_SERVICE'],
+            'HOST': POSTGRES_HOST,
             'PORT': os.environ['DB_PORT']
         }
     }
 else:
     raise RuntimeError('Bad django configuration. Invalid DATABASE type')
 
+
+MONGODB_DATABASES = {
+    'default': {
+        'name': DB_NAME,
+        'serverSelectionTimeoutMS': 200,
+        'host': MONGO_HOST,
+    },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
@@ -126,6 +137,8 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
+MEDIA_URL = '/media/'
+DEFAULT_FILE_STORAGE = 'utils.gridfs.GridFSStorage'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, 'static'),
