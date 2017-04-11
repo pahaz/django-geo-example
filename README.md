@@ -1,10 +1,19 @@
-## Django Development With Docker Compose and Machine
+## Django Development With Docker Compose
 
-Featuring:
+Include:
 
-- Docker >= v1.10.3
-- Docker Compose >= v1.7.1
-- Python >= 3.5
+ - Python + Node.js 
+ - Django
+ - WebSocket server
+ - Celery worker + Celery beat
+ - PostgreSQL
+ - Redis
+
+Requirements:
+
+ - Docker >= v1.10.3
+ - Docker Compose >= v1.7.1
+ - Python >= 3.5
 
 ### OS X Docker Native Instruction
 
