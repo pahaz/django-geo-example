@@ -15,15 +15,17 @@ import os
 from os.path import join, abspath, normpath, dirname
 import warnings
 
-DEBUG = False
 BASE_DIR = dirname(dirname(abspath(__file__)))
 PROJECT_ROOT = dirname(abspath(__file__))
 DATA_DIR = normpath(os.environ.get('DATA_DIR', join(BASE_DIR, '__data__')))
 
 REDIS_HOST = 'redis'
-POSTGRES_HOST = os.environ.get('DB_SERVICE', 'postgres')
-MONGO_HOST = '127.0.0.1'
-DB_NAME = os.environ.get('DB_NAME', 'default')
+POSTGRES_HOST = os.environ.get('POSTGRES_HOST', '127.0.0.1')
+
+POSTGRES_DB_NAME = os.environ.get('POSTGRES_DB_NAME', 'geodjango')
+POSTGRES_USER = os.environ.get('POSTGRES_USER', 'pahaz')
+POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD', '')
+POSTGRES_PORT = int(os.environ.get('POSTGRES_PORT', '5432'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -35,7 +37,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'Q+%ik6z&!yer+ga9m=e%jcqAd21asdAFw2')
 DEBUG = os.environ.get('DEBUG', 'true').lower() == 'true'
 STATIC_ROOT = os.environ.get('STATIC_ROOT', join(DATA_DIR, 'static'))
 MEDIA_DIR = os.environ.get('MEDIA_DIR', join(DATA_DIR, 'media'))
-DATABASE = os.environ.get('DATABASE', 'sqlite3')
 
 ALLOWED_HOSTS = ['*']
 
@@ -49,9 +50,15 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
+
+    'rest_framework',
+    'rest_framework_gis',
+    'djmoney',
+    'phonenumber_field',
 
     # apps
-    'todo',
+    'geoapi',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -90,35 +97,15 @@ WSGI_APPLICATION = '_project_.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-
-if DATABASE == 'sqlite3':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
-        }
-    }
-elif DATABASE == 'postgresql':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': DB_NAME,
-            'USER': os.environ['DB_USER'],
-            'PASSWORD': os.environ['DB_PASS'],
-            'HOST': POSTGRES_HOST,
-            'PORT': os.environ['DB_PORT']
-        }
-    }
-else:
-    raise RuntimeError('Bad django configuration. Invalid DATABASE type')
-
-
-MONGODB_DATABASES = {
+DATABASES = {
     'default': {
-        'name': DB_NAME,
-        'serverSelectionTimeoutMS': 200,
-        'host': MONGO_HOST,
-    },
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': POSTGRES_DB_NAME,
+        'USER': POSTGRES_USER,
+        'PASSWORD': POSTGRES_PASSWORD,
+        'HOST': POSTGRES_HOST,
+        'PORT': POSTGRES_PORT,
+    }
 }
 
 # Internationalization
@@ -130,42 +117,16 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 USE_L10N = True
-
-USE_TZ = False
-
+USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 MEDIA_URL = '/media/'
-DEFAULT_FILE_STORAGE = 'utils.gridfs.GridFSStorage'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, 'static'),
 )
 
 # Celery
-BROKER_TRANSPORT = 'redis'
-CELERY_BROKER_TRANSPORT = BROKER_URL = 'redis://%s:6379/0' % REDIS_HOST
-CELERY_RESULT_BACKEND = 'redis://%s:6379/0' % REDIS_HOST
-CELERY_TIMEZONE = 'UTC'
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_ACCEPT_CONTENT = ['json']  # Ignore other content
-CELERY_RESULT_SERIALIZER = 'json'
-CELERYBEAT_SCHEDULE_FILENAME = join(DATA_DIR, 'celerybeat.db')
-CELERYBEAT_SCHEDULE = {}
-
-
-try:
-    from celery.schedules import crontab  # noqa
-    from datetime import timedelta  # noqa
-    CELERYBEAT_SCHEDULE = {
-        'update_todo_viewers': {
-            'task': 'todo.tasks.increase',
-            'schedule': timedelta(minutes=1),
-            'args': (15, )
-        },
-    }
-except ImportError:
-    warnings.warn('CELERYBEAT DON`T WORK: from celery.schedules import '
-                  'crontab raise ImportError!')
+# not yet!

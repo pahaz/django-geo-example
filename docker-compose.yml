@@ -25,36 +25,6 @@ services:
       - redis
       - mongo
 
-  realtime:
-    image: 'websource'
-    ports:
-      - '127.0.0.1:9999:9999'
-    env_file: '.env'
-    command: 'python realtime_ws_server.py'
-    volumes_from:
-      - web
-    depends_on:
-      - web
-
-  celery_worker:
-    image: 'websource'
-    env_file: '.env'
-    command: 'python -m celery -A _project_ worker -l debug'
-    volumes_from:
-      - web
-    depends_on:
-      - web
-
-  celery_beat:
-    container_name: 'celery_beat'
-    image: 'websource'
-    env_file: '.env'
-    command: 'python -m celery -A _project_ beat --pidfile= -l debug'
-    volumes_from:
-      - web
-    depends_on:
-      - web
-
   postgres:
     container_name: 'postgres'
     image: 'postgres:9.5.3'
@@ -70,15 +40,6 @@ services:
       - '127.0.0.1:6379:6379'
     volumes:
       - 'redisdata:/data'
-
-  mongo:
-    container_name: 'mongo'
-    image: 'mongo:3.3'
-    command: '--storageEngine wiredTiger'
-    ports:
-      - '127.0.0.1:27017:27017'
-    volumes:
-      - 'mongodata:/data/db'
 
 volumes:
   pgdata:
