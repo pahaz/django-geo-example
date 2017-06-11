@@ -2,19 +2,10 @@ import json
 
 from rest_framework import exceptions
 from rest_framework import viewsets
-from rest_framework_gis.filters import GeoFilterSet, GeometryFilter
 from rest_framework_gis.pagination import GeoJsonPagination
 
 from .models import ServiceArea, Provider
 from .serializers import ServiceAreaSerializer, ProviderSerializer
-
-
-class ServiceAreaFilterSet(GeoFilterSet):
-    contains_poly = GeometryFilter(name='poly', lookup_expr='contains')
-
-    class Meta:
-        model = ServiceArea
-        fields = ('contains_poly', 'provider')
 
 
 class ServiceAreaViewSet(viewsets.ModelViewSet):
