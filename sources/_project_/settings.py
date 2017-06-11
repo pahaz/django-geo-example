@@ -130,3 +130,12 @@ STATICFILES_DIRS = (
 
 # Celery
 # not yet!
+
+# DRF
+REST_FRAMEWORK = {
+    'PAGE_SIZE': 50,
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    'TEST_REQUEST_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
+}
