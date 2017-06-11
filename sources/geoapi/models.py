@@ -5,7 +5,7 @@ from djmoney.models.fields import MoneyField, MoneyPatched, CurrencyField
 from phonenumber_field.modelfields import PhoneNumberField
 
 from utils.fields import LanguageField
-from utils.models import Dated, Owned
+from utils.models import Dated
 
 
 class WorldBorder(models.Model):
@@ -28,7 +28,7 @@ class WorldBorder(models.Model):
         return self.name
 
 
-class Provider(Dated, Owned):
+class Provider(Dated):
     name = models.CharField(max_length=255)
     email = models.EmailField()
     phone = PhoneNumberField()
@@ -39,7 +39,7 @@ class Provider(Dated, Owned):
         return self.name
 
 
-class ServiceArea(Dated, Owned):
+class ServiceArea(Dated):
     provider = models.ForeignKey(Provider)
     name = models.CharField(max_length=255)
     poly = models.PolygonField()
