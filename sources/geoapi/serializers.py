@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
-from geoapi.models import ServiceArea, Provider
+from .models import ServiceArea, Provider
 
 
 class ProviderSerializer(ModelSerializer):
@@ -18,3 +18,4 @@ class ServiceAreaSerializer(GeoFeatureModelSerializer):
         model = ServiceArea
         geo_field = "poly"
         fields = ('id', 'name', 'provider', 'price')
+        auto_bbox = True
