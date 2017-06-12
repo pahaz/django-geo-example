@@ -26,7 +26,22 @@ Requirements:
 
 ## API ##
 
+You can get more deatail and example here: http://127.0.0.1:8000/api/v1/
 
+GEOJSON Objects examples:
+
+	- {"type":"Point","coordinates":[9.26436996459961,10.564178042345375]}
+	- {"type":"Polygon","coordinates":[[[6.15234375,10.9423828125],[6.328125,9.31640625],[8.701171875,9.84375],[7.8662109375,11.513671875],[6.6357421875,12.1728515625],[6.15234375,10.9423828125]]}
+
+Short API Overview:
+
+	- `GET /api/v1/providers/` -- retrieve all transportation providers
+	- `POST /api/v1/providers/ {"name": "required", "email": "", "phone": null, "language": null, "currency": ""}` -- create transportation provider
+
+	- `GET /api/v1/service-areas/` -- retrive all service-areas for all providers in GEOJSON format
+	- `GET /api/v1/service-areas/?poly__contains={"type":"Point","coordinates":[9.26436996459961,10.564178042345375]}` -- filter a list of all service areas that include the given point
+	- `GET /api/v1/service-areas/?provider_id=1` -- filter a list of all service-areas for a provider ID
+	- `POST /api/v1/service-areas/ {"name": "required", "provider_id": "required", "price": "required", "poly": "required; GeoJson Polygon"}` -- create a service provider area
 
 ### OS X Docker Native Instruction
 
