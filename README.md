@@ -2,7 +2,10 @@
 
 Based on https://github.com/pahaz/docker-compose-django-postgresql-redis-example
 
-Example: http://test1.8iq.ru/
+Example: 
+ - http://test1.8iq.ru/
+ - http://test1.8iq.ru/admin/ -- admin panel (credentioals: admin/geohackerww2)
+ - http://test1.8iq.ru/api/v1/ -- API docs
 
 UseCase: Many transportation providers define custom polygons as their "service area" and 
 we'd like for the owners of these shuttle companies to be able 
