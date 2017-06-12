@@ -14,6 +14,8 @@ Once a provider is created they should be able to start defining service areas. 
 
 API endpoint should take a lat/lng pair as arguments and return a list of all polygons that include the given lat/lng. The name of the polygon, provider's name, and price should be returned for each polygon. This operation should be FAST.
 
+![Admin screenshot](./docs/geo-admin.png)
+
 Include:
 
  - Django
@@ -28,7 +30,7 @@ Requirements:
 
 ## API ##
 
-You can get more deatail and example here: http://127.0.0.1:8000/api/v1/
+You can get more details and examples here: http://127.0.0.1:8000/api/v1/
 
 GEOJSON Objects examples:
 
