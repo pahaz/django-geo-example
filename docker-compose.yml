@@ -23,11 +23,10 @@ services:
     depends_on:
       - postgres
       - redis
-      - mongo
 
   postgres:
     container_name: 'postgres'
-    image: 'postgres:9.5.3'
+    image: 'mdillon/postgis:9.6'
     ports:
       - '127.0.0.1:5432:5432'
     volumes:
@@ -46,4 +45,3 @@ volumes:
   redisdata:
   cachedata:
   mediadata:
-  mongodata:

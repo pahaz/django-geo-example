@@ -136,6 +136,8 @@ COPY requirements.txt /requirements.txt
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN pip3 install --no-cache-dir -r /requirements.txt
 
+RUN apt-get update && apt-get install -y binutils libproj-dev gdal-bin && rm -rf /var/lib/apt/lists/*
+
 ENV STATIC_ROOT /static
 ENV MEDIA_DIR /media
 ENV DATA_DIR /cache
